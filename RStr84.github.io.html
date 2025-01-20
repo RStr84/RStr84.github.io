@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do-Liste</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #inputField {
+            width: 70%;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #addButton {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #addButton:hover {
+            background-color: #218838;
+        }
+
+        #itemList {
+            margin-top: 20px;
+        }
+
+        .item {
+            width: 95%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .rot {
+            color: red;
+        }
+
+        .grün {
+            color: green;
+        }
+
+        button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .edit-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+    </style>
+
+</head>
+<body>
+<h2>To-Do-Liste</h2>
+
+<input type="text" id="inputField" placeholder="Füge hinzu!">
+<button id="addButton">Hinzufügen</button>
+<div id="itemList">
+
+</div>
+
+<script>
+
+    const inputField = document.querySelector('#inputField');
+    const addButton = document.querySelector('#addButton');
+    const itemList = document.querySelector('#itemList');
+
+    // window.onload = function () {
+    //   const storedItems = JSON.parse(localStorage.getItem('items')) || [];
+    //   storedItems.forEach(item => {
+    //     addItemToDOM(item.text, item.checked);
+    //   });
+    // }
+
+    // Add Item
+    // erzeugt einen neuen Paragrafen mit dem ItemText aus dem Input-Feld
+    // zusätzlich wird der ItemText in "rot" ausgegeben
+    // 'item' bezieht sich aud Style.
+    // wenn der User nichts eingibt und den Add-Button klickt, wird nichts ausgeführt
+    const addItem = function () {
+        const itemText = inputField.value;
+        const listItem = document.createElement('div');
+        listItem.classList.add('item');
+        if (itemText === '') return;
+
+        // Checkbox
+        // es wird ein Input-Feld des Typs "Checkbox" erzeugt, dass die Schriftfarbe des ListItems,
+        // wenn die Checkbox gesetzt ist oder nicht
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.addEventListener('change', () => {
+            listItem.classList.toggle('grün', checkbox.checked);
+            listItem.classList.toggle('rot', !checkbox.checked);
+            textNode.classList.toggle('rot', !checkbox.checked);
+        });
+
+        // Span
+        // damit der ItemText nach Hinzufügen "rot" erscheint
+        const textNode = document.createElement('span');
+        textNode.textContent = itemText;
+        textNode.classList.add('rot');
+
+        // TextNode und Edit-Button
+        // hier wird der ItemTextNode (inputField.value) übernommen und außerdem ein Edit-Button erstellt,
+        // der mit einem EventListener auf die später deklarierte Funktion EditItem zugreifen kann
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Ändern';
+        editButton.classList.add('edit-button');
+        editButton.addEventListener('click', () => editItem(listItem, itemText));
+
+        // Delete
+        // Buttonerstellung und Benennung, sowie Hinzufügen eine EventListeners, der bei Klicken mit
+        // der remove-Methode das Item löscht
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Löschen';
+        deleteButton.classList.add('delete-button');
+        deleteButton.addEventListener('click', () => listItem.remove());
+        // saveList();
+
+        // AppendChild für Buttons und Checkbox/TextNode
+        // hier werden die einzelnen Elemente (Checkbox, TextNode, EditButton, DeleteButton)
+        // als ListItem-Container zur ItemList hinzugefügt
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'flex-end';
+
+        // Button-Container
+        // hier werden die Buttons separat einem Container hinzugefügt aus Gründen des Styles
+        buttonContainer.appendChild(editButton);
+        buttonContainer.appendChild(deleteButton);
+
+        // Append aller Elemente zum listItem
+        listItem.appendChild(checkbox);
+        listItem.appendChild(textNode);
+        listItem.appendChild(buttonContainer);
+
+        // Alte Version
+        // listItem.appendChild(checkbox);
+        // listItem.appendChild(textNode);
+        // listItem.appendChild(editButton);
+        // listItem.appendChild(deleteButton);
+
+        // Append des ListItems zur ItemList
+        itemList.appendChild(listItem);
+        // saveList();
+
+        // Return
+        // nach dem Ausführen der addItem-Funktion wird das Input-Feld "geleert"
+        inputField.value = '';
+        // saveList();
+    }
+
+    // function saveList() {
+    //   const items = [];
+    //   itemList.childNodes.forEach(item => {
+    //     const text = item.childNodes[1].textContent;
+    //     const checked = item.childNodes[0].checked;
+    //     items.push({ text, checked });
+    //   });
+    //   localStorage.setItem('items', JSON.stringify(items));
+    // }
+
+
+
+    // Edit-Methode (als Deklaration, da weiter oben EventListener)
+    // als Input-Feld wird ein "Prompt" erzeugt mit den Parametern "Message" und dem "Default-Wert"
+    // bzw. dem ursprünglichen Wert (ItemText)
+    // mit der If-Abfrage wird sichergestellt, dass ein neuer Wert erzeugt werden muss
+    // listItem.childNodes[1] bezieht sich auf den ItemText, wobei [0] = Checkbox, [2] = Edit-Button
+    // und [3] = Delete-Button sind
+    function editItem(listItem, oldText) {
+        const newText = prompt('Ändere die Eingabe:', oldText);
+        if (newText !== null && newText !== '') {
+            listItem.childNodes[1].textContent = newText;
+            // saveList();
+        }
+    }
+
+    // Item hinzufügen, wenn die Eingabetaste gedrückt wird
+    inputField.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            addButton.click();
+        }
+    });
+
+    // function saveList() {
+    //   localStorage.setItem('list', itemList.innerHTML);
+    // }
+    //
+    // function displayList() {
+    //   const savedList = localStorage.getItem('list');
+    //   if (savedList) {
+    //     itemList.innerHTML = savedList;
+    //   }
+    // }
+    //
+    // displayList();
+
+    // Item hinzufügen, wenn der Add-Button gedrückt wird
+    addButton.addEventListener('click', addItem);
+
+</script>
+</body>
+</html>
